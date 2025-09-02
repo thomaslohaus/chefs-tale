@@ -1,7 +1,7 @@
-using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.AI;
 using System;
+using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.InputSystem;
 
 [RequireComponent (typeof(NavMeshAgent))]
 public class Player : MonoBehaviour {
@@ -14,10 +14,15 @@ public class Player : MonoBehaviour {
     public event Action<Vector3> OnDestinationSet;
     public event Action OnArriveAtDestination;
 
-    private Vector3 lookToWhenArrive = Vector3.zero;
-    [SerializeField] private float rotationSpeed = 100f;
+    private Vector3 lookAtWhenArrive = Vector3.zero;
+    [SerializeField] private float rotationSpeed = 200f;
 
     private Counter currentCounter;
+
+    [SerializeField] private Transform palmLeft, palmRight;
+    private KitchenItem itemInLeftHand = null, itemInRightHand = null;
+
+    public bool CanCarry { get { return itemInLeftHand == null || itemInRightHand == null; } }
 
     private void Awake() {
         InputActions inputActions = new InputActions();
@@ -32,17 +37,17 @@ public class Player : MonoBehaviour {
             isWalking = false;
             OnArriveAtDestination?.Invoke();
         }
-        if (!isWalking && lookToWhenArrive != Vector3.zero) {
-            float angle = Mathf.Atan2(lookToWhenArrive.x - transform.position.x, lookToWhenArrive.z - transform.position.z) * Mathf.Rad2Deg;
+        if (!isWalking && lookAtWhenArrive != Vector3.zero) {
+            float angle = Mathf.Atan2(lookAtWhenArrive.x - transform.position.x, lookAtWhenArrive.z - transform.position.z) * Mathf.Rad2Deg;
             Quaternion targetRotation = Quaternion.AngleAxis(angle, Vector3.up);
 
             if (Quaternion.Angle(transform.rotation, targetRotation) > 0.2) {
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
             } else {
-                lookToWhenArrive = Vector3.zero;
+                lookAtWhenArrive = Vector3.zero;
             }
         }
-        if (!isWalking && lookToWhenArrive == Vector3.zero && currentCounter != null) {
+        if (!isWalking && lookAtWhenArrive == Vector3.zero && currentCounter != null) {
             currentCounter.Interact(this);
             currentCounter = null;
         }
@@ -52,18 +57,71 @@ public class Player : MonoBehaviour {
         Vector2 clickedPosition = playerActions.Move.ReadValue<Vector2>();
 
         Ray ray = Camera.main.ScreenPointToRay(clickedPosition);
-        if (Physics.Raycast(ray, out RaycastHit hit, 100, floorLayer)) {
-            if (hit.transform.TryGetComponent<ClearCounter>(out ClearCounter clearCounter)) {
-                WalkTo(clearCounter.Position);
-                lookToWhenArrive = clearCounter.LookToWhenArrive;
-                currentCounter = clearCounter;
+
+        Vector3 walkDestination = Vector3.zero;
+        currentCounter = null;
+
+        foreach (RaycastHit hit in Physics.RaycastAll(ray, 100, floorLayer)) {
+            if (hit.transform.TryGetComponent<Counter>(out Counter counter)) {
+                walkDestination = counter.WalkDestination;
+                lookAtWhenArrive = counter.LookAtWhenArrive;
+                currentCounter = counter;
+                break;
             } else {
                 if (hit.point != transform.position) {
-                    WalkTo(hit.point);
+                    walkDestination = hit.point;
+                    lookAtWhenArrive = Vector3.zero;
                     currentCounter = null;
                 }
             }
         }
+        if (walkDestination != Vector3.zero) {
+            WalkTo(walkDestination);
+        }
+    }
+
+    public void HoldItem(KitchenItem item) {
+        if (item != null) {
+            if (itemInLeftHand == null) {
+                itemInLeftHand = item;
+                item.transform.parent = palmLeft;
+                item.transform.localPosition = Vector3.zero;
+                item.transform.localRotation = Quaternion.identity;
+            } else if (itemInRightHand == null) {
+                itemInRightHand = item;
+                item.transform.parent = palmRight;
+                item.transform.localPosition = Vector3.zero;
+                item.transform.localRotation = Quaternion.identity;
+            } else {
+                Debug.Log("Hands are full. Can't carry any more items.");
+            }
+        }
+    }
+
+    public KitchenItem GiveItem() {
+        KitchenItem item = null;
+        /*
+        if (itemInLeftHand != null) {
+            item = Instantiate(itemInLeftHand);
+            Destroy(itemInLeftHand.gameObject);
+            itemInLeftHand = null;
+        } else if (itemInRightHand != null) {
+            item = itemInRightHand;
+            itemInLeftHand = null;
+        } else {
+            Debug.Log("Hands are Empty.");
+        }
+        */
+        if (itemInLeftHand != null) {
+            item = itemInLeftHand;
+            itemInLeftHand = null;
+        } else if (itemInRightHand != null) {
+            item = itemInRightHand;
+            itemInLeftHand = null;
+        } else {
+            Debug.Log("Hands are Empty.");
+        }
+        return item;
     }
 
     private void SetNavAgent(Vector3 destination) {

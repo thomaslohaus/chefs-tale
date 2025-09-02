@@ -61,11 +61,17 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.1.11f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\ClearCounter.cs" />
-    <Compile Include="Assets\Scripts\Counter.cs" />
+    <Compile Include="Assets\Scripts\KitchenItem.cs" />
+    <Compile Include="Assets\Input\InputActions.cs" />
+    <Compile Include="Assets\Scripts\Counter\BaseCounter.cs" />
+    <Compile Include="Assets\Scripts\KitchenItemBuilder.cs" />
+    <Compile Include="Assets\Scripts\IngredientDefinition.cs" />
     <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\Scripts\PlayerVisuals.cs" />
-    <Compile Include="Assets\InputActions.cs" />
+    <Compile Include="Assets\Scripts\Counter\IngredientCounter.cs" />
+    <Compile Include="Assets\Scripts\Counter\ClearCounter.cs" />
+    <Compile Include="Assets\Scripts\Counter\Counter.cs" />
+    <Compile Include="Assets\Scripts\Ingredient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
