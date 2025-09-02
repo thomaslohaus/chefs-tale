@@ -15,4 +15,3 @@ MonoBehaviour:
   ingredientName: Tomato
   prefab: {fileID: 4110650303704990, guid: 764c0bf4126f324419d76e788a3e4635, type: 3}
   sprite: {fileID: 0}
-  icon: {fileID: 4261985943832672, guid: 9ca175356fdde7c448b4ed38b425d50c, type: 3}
