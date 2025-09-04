@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ded76c79e87e17840b9557a7549444e9, type: 3}
+  m_Name: Tomato Half
+  m_EditorClassIdentifier: 
+  ingredientName: Tomato Half
+  prefab: {fileID: 4925630356062940, guid: ada92508647c06c4f9e632e0f4e9ca60, type: 3}
+  sprite: {fileID: 0}

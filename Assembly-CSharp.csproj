@@ -69,7 +69,9 @@
     <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\Scripts\PlayerVisuals.cs" />
     <Compile Include="Assets\Scripts\Counter\IngredientCounter.cs" />
+    <Compile Include="Assets\Scripts\Counter\CuttingCounter.cs" />
     <Compile Include="Assets\Scripts\Counter\ClearCounter.cs" />
+    <Compile Include="Assets\Scripts\CuttingRecipe.cs" />
     <Compile Include="Assets\Scripts\Counter\Counter.cs" />
     <Compile Include="Assets\Scripts\Ingredient.cs" />
   </ItemGroup>

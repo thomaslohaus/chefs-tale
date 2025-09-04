@@ -4,8 +4,6 @@ public class ClearCounter : BaseCounter {
     private KitchenItem placedItem = null;
 
     public override void Interact(Player player) {
-        Debug.Log("Interacted!");
-
         if (placedItem == null) {
             KitchenItem item = player.GiveItem();
             if (item != null) {
