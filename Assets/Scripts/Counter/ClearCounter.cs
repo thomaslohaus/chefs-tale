@@ -6,15 +6,7 @@ public class ClearCounter : BaseCounter {
     public override void Interact(Player player) {
         if (placedItem == null) {
             KitchenItem item = player.GiveItem();
-            if (item != null) {
-                item.transform.parent = this.transform;
-                item.transform.localPosition = Vector3.zero;
-                item.transform.localRotation = Quaternion.Euler(-90f, 0f, 0f);
-                item.transform.localScale = Vector3.one;
-                this.placedItem = item;
-            } else {
-                Debug.Log("Item is null");
-            }
+            PositionItemOnCounter(item);
         } else {
             if (player.CanCarry) {
                 KitchenItem newItem = Instantiate<KitchenItem>(placedItem);
@@ -22,6 +14,18 @@ public class ClearCounter : BaseCounter {
                 placedItem = null;
                 player.HoldItem(newItem);
             }
+        }
+    }
+
+    private void PositionItemOnCounter(KitchenItem item) {
+        if (item != null) {
+            item.transform.parent = this.transform;
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localRotation = Quaternion.Euler(-90f, 0f, 0f);
+            item.transform.localScale = Vector3.one * 2;
+            this.placedItem = item;
+        } else {
+            Debug.Log("Item is null");
         }
     }
 }
