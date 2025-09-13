@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
@@ -20,9 +22,10 @@ public class Player : MonoBehaviour {
     private Counter currentCounter;
 
     [SerializeField] private Transform palmLeft, palmRight;
-    private KitchenItem itemInLeftHand = null, itemInRightHand = null;
+    private List<KitchenItem> itemsInHand;
+    private int capacity = 2;
 
-    public bool CanCarry { get { return itemInLeftHand == null || itemInRightHand == null; } }
+    public bool CanCarry { get { return itemsInHand.Count < capacity; } }
 
     private void Awake() {
         InputActions inputActions = new InputActions();
@@ -30,6 +33,8 @@ public class Player : MonoBehaviour {
 
         agent = GetComponent<NavMeshAgent>();
         OnDestinationSet += SetNavAgent;
+
+        itemsInHand = new List<KitchenItem>();
     }
 
     private void Update() {
@@ -81,45 +86,61 @@ public class Player : MonoBehaviour {
     }
 
     public void HoldItem(KitchenItem item) {
-        if (item != null) {
-            if (itemInLeftHand == null) {
-                itemInLeftHand = item;
+        if (item != null && itemsInHand.Count < capacity) {
+            itemsInHand.Add(item);
+
+            if (itemsInHand.Count == 1)
                 item.transform.parent = palmLeft;
-                item.transform.localPosition = Vector3.zero;
-                item.transform.localRotation = Quaternion.identity;
-            } else if (itemInRightHand == null) {
-                itemInRightHand = item;
+            else
                 item.transform.parent = palmRight;
-                item.transform.localPosition = Vector3.zero;
-                item.transform.localRotation = Quaternion.identity;
-            } else {
-                Debug.Log("Hands are full. Can't carry any more items.");
-            }
+
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localRotation = Quaternion.identity;
+        } else {
+            Debug.Log("Hands are full. Can't carry any more items.");
         }
     }
 
-    public KitchenItem GiveItem() {
+    public ReadOnlyCollection<KitchenItem> ShowItemsInHand() {
+        ReadOnlyCollection<KitchenItem> kitchenItems = new(itemsInHand);
+        return kitchenItems;
+    }
+
+    public KitchenItem GiveItem(KitchenItem desiredItem) {
+        int index = itemsInHand.IndexOf(desiredItem);
         KitchenItem item = null;
-        /*
-        if (itemInLeftHand != null) {
-            item = Instantiate(itemInLeftHand);
-            Destroy(itemInLeftHand.gameObject);
-            itemInLeftHand = null;
-        } else if (itemInRightHand != null) {
-            item = itemInRightHand;
-            itemInLeftHand = null;
+
+        if (index == 0) {
+            item = GiveItemInLeftHand();
+        } else if (index == 1) {
+            item = itemsInHand[1];
+            itemsInHand.RemoveAt(1);
         } else {
             Debug.Log("Hands are Empty.");
         }
-        */
-        if (itemInLeftHand != null) {
-            item = itemInLeftHand;
-            itemInLeftHand = null;
-        } else if (itemInRightHand != null) {
-            item = itemInRightHand;
-            itemInLeftHand = null;
+        
+        return item;
+    }
+
+    public KitchenItem GiveAnyItem() {
+        KitchenItem item = null;
+        if (itemsInHand.Count > 0) {
+            item = GiveItemInLeftHand();
         } else {
             Debug.Log("Hands are Empty.");
+        }
+        return item;
+    }
+
+    private KitchenItem GiveItemInLeftHand() {
+        KitchenItem item = itemsInHand[0];
+        itemsInHand.RemoveAt(0);
+        if (itemsInHand.Count == 1) {
+            Transform itemRemaining = palmRight.GetChild(0);
+            itemRemaining.parent = palmLeft;
+            itemRemaining.localPosition = Vector3.zero;
+            itemRemaining.localRotation = Quaternion.identity;
+
         }
         return item;
     }

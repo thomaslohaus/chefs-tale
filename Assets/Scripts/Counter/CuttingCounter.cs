@@ -1,7 +1,8 @@
-using System.Collections.Generic;
-using UnityEngine;
-using System.Linq;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using UnityEngine;
 
 public class CuttingCounter : BaseCounter {
     private Color BAR_COLOR_RUNNING = new Color(1f, 183 / 255f, 0f, 1f);
@@ -15,9 +16,9 @@ public class CuttingCounter : BaseCounter {
     [SerializeField] private GameObject knifeButcherPrefab;
     private GameObject choppingBoard, knife, butcherKnife;
 
-    private KitchenItem placedItem = null;
-
+    private Ingredient currentIngredient = null;
     private CuttingRecipe currentCuttingRecipe = null;
+    
     private float cutProgress = 0f;
     private int cutStep = 0;
     private Timer timer;
@@ -37,7 +38,7 @@ public class CuttingCounter : BaseCounter {
     }
 
     public override void Interact(Player player) {
-        if (placedItem == null) {
+        if (currentIngredient == null) {
             // Get ingretent from player and place it on the counter
             if (TryGetIngredientFromPlayer(player)) {
                 StartCutting();
@@ -56,19 +57,25 @@ public class CuttingCounter : BaseCounter {
     }
 
     private bool TryGetIngredientFromPlayer(Player player) {
-        Ingredient ingredient = (Ingredient)player.GiveItem();
-        if (ingredient != null) {
-            if (TrySetCurrentRecipe(ingredient.Definition)) {
-                PositionIngredientOnCounter(ingredient);
-                return true;
+        ReadOnlyCollection<KitchenItem> itemsInHand = player.ShowItemsInHand();
+
+        foreach(KitchenItem item in itemsInHand) {
+            Ingredient ingredient = (Ingredient)item;
+            if (ingredient != null) {
+                if (TrySetCurrentRecipe(ingredient.Definition)) {
+                    PositionIngredientOnCounter((Ingredient)player.GiveItem(ingredient));
+                    return true;
+                }
             }
         }
         return false;
     }
 
     private void GiveIngredientToPlayer(Player player) {
-        player.HoldItem(placedItem);
-        placedItem = null;
+        if (currentCuttingRecipe.uitlityOutput != null)
+            ReplaceCurrentIngredientWithUtility();
+        player.HoldItem(currentIngredient);
+        currentIngredient = null;
     }
 
     private void ResetCuttingProgress() {
@@ -81,7 +88,7 @@ public class CuttingCounter : BaseCounter {
     private bool TrySetCurrentRecipe(IngredientDefinition definition) {
         try {
             currentCuttingRecipe = recipes.Single(recipe => recipe.input == definition);
-        } catch (InvalidOperationException e) {
+        } catch (InvalidOperationException) {
             return false;
         }
         return true;
@@ -109,7 +116,7 @@ public class CuttingCounter : BaseCounter {
 
     private void FinishCutting() {
         Debug.Log($"Timer Finished");
-        CreateNextIngredient();
+        ReplaceCurrentIngredientWithNextStepAndPositionIt();
         cutProgress = 1f;
         progressBar.SetColor(BAR_COLOR_FINISHED);
         progressBar.UpdateProgress(cutProgress);
@@ -123,24 +130,35 @@ public class CuttingCounter : BaseCounter {
 
         if (cutProgress >= ((float)(cutStep + 1) / currentCuttingRecipe.outputs.Count)) {
             // next step
-            CreateNextIngredient();
+            ReplaceCurrentIngredientWithNextStepAndPositionIt();
         }
     }
 
-    private void CreateNextIngredient() {
-        Ingredient currentIngredient = (Ingredient)placedItem;
-        currentIngredient.enabled = false;
-        Ingredient newIngredient = KitchenItemBuilder.Instance.InstanciateIngredient(currentCuttingRecipe.outputs[cutStep++]);
+    private void ReplaceCurrentIngredientWithNextStepAndPositionIt() {
+        Ingredient newIngredient = ReplaceCurrentIngredient(currentCuttingRecipe.outputs[cutStep++]);
         PositionIngredientOnCounter(newIngredient);
-        Destroy(currentIngredient.gameObject);
     }
+
+    private void ReplaceCurrentIngredientWithUtility() {
+        Ingredient newIngredient = ReplaceCurrentIngredient(currentCuttingRecipe.uitlityOutput);
+    }
+
+    private Ingredient ReplaceCurrentIngredient(IngredientDefinition ingredientDefinition) {
+        Ingredient oldIngredient = (Ingredient)currentIngredient;
+        oldIngredient.enabled = false;
+        Ingredient newIngredient = KitchenItemBuilder.Instance.InstanciateIngredient(ingredientDefinition);
+        Destroy(oldIngredient.gameObject);
+        this.currentIngredient = newIngredient;
+        return newIngredient;
+    }
+
 
     private void PositionIngredientOnCounter(Ingredient ingredient) {
         ingredient.transform.parent = this.transform;
         ingredient.transform.localPosition = ingredientPosition;
         ingredient.transform.localRotation = Quaternion.Euler(-90f, 0f, 0f);
         ingredient.transform.localScale = Vector3.one * 2;
-        this.placedItem = ingredient;
+        this.currentIngredient = ingredient;
     }
 
     private void InstatiateAllCounterObjects() {

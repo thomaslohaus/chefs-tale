@@ -5,7 +5,7 @@ public class ClearCounter : BaseCounter {
 
     public override void Interact(Player player) {
         if (placedItem == null) {
-            KitchenItem item = player.GiveItem();
+            KitchenItem item = player.GiveAnyItem();
             PositionItemOnCounter(item);
         } else {
             if (player.CanCarry) {
