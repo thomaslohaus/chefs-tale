@@ -1179,6 +1179,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1048832
   rotationSpeed: 200
+  timeToLongIdle: 8
   palmLeft: {fileID: 2131060609}
   palmRight: {fileID: 991467868}
 --- !u!4 &411967967
@@ -1321,7 +1322,7 @@ MonoBehaviour:
   m_Center: {x: 0, y: 2, z: 0}
   m_LayerMask:
     serializedVersion: 2
-    m_Bits: 375
+    m_Bits: 1048832
   m_UseGeometry: 0
   m_DefaultArea: 0
   m_GenerateLinks: 0
@@ -1652,6 +1653,22 @@ PrefabInstance:
       propertyPath: 'recipes.Array.data[0]'
       value: 
       objectReference: {fileID: 11400000, guid: 0470c4b371b2b7d4a8dbcff0e0d181c5, type: 2}
+    - target: {fileID: 4300252096028825858, guid: 4df364b81a3deaf4e82487f6ee960b4c, type: 3}
+      propertyPath: walkDestinationOffset.y
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7827829629826735199, guid: 4df364b81a3deaf4e82487f6ee960b4c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8199547482865778980, guid: 4df364b81a3deaf4e82487f6ee960b4c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 9091173428960307786, guid: 4df364b81a3deaf4e82487f6ee960b4c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2666,6 +2683,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 411967966}
+  walkDestinationSignPrefab: {fileID: 1685306706342128, guid: a1aa13063b43b0247bc0590d77ad4ee1, type: 3}
 --- !u!1001 &1094179698
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2805,6 +2823,10 @@ PrefabInstance:
     - target: {fileID: 1199776732947942879, guid: 0f7ce01169f81ec49b250d73be88d9b6, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7224910201554038263, guid: 0f7ce01169f81ec49b250d73be88d9b6, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 9097498049311296028, guid: 0f7ce01169f81ec49b250d73be88d9b6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4155,6 +4177,18 @@ PrefabInstance:
     - target: {fileID: 4300252096028825858, guid: 4df364b81a3deaf4e82487f6ee960b4c, type: 3}
       propertyPath: walkDestinationOffset.y
       value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7827829629826735199, guid: 4df364b81a3deaf4e82487f6ee960b4c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8199547482865778980, guid: 4df364b81a3deaf4e82487f6ee960b4c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 9091173428960307786, guid: 4df364b81a3deaf4e82487f6ee960b4c, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -5617,6 +5651,10 @@ PrefabInstance:
     - target: {fileID: 1199776732947942879, guid: 0f7ce01169f81ec49b250d73be88d9b6, type: 3}
       propertyPath: m_Name
       value: Double Counter
+      objectReference: {fileID: 0}
+    - target: {fileID: 7224910201554038263, guid: 0f7ce01169f81ec49b250d73be88d9b6, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 9097498049311296028, guid: 0f7ce01169f81ec49b250d73be88d9b6, type: 3}
       propertyPath: m_LocalPosition.x
