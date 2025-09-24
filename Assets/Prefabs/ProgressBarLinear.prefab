@@ -179,6 +179,7 @@ GameObject:
   - component: {fileID: 8478032408403061710}
   - component: {fileID: 6646354914869278102}
   - component: {fileID: 8234159651214498382}
+  - component: {fileID: 286582032790797498}
   m_Layer: 5
   m_Name: ProgressBarLinear
   m_TagString: Untagged
@@ -252,7 +253,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &6646354914869278102
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -284,3 +285,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   barImage: {fileID: 7736903863585306237}
   barColor: {r: 1, g: 0.7176471, b: 0, a: 1}
+--- !u!114 &286582032790797498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4422175580549360583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16b4f6aea3b75274fb6e2b4875ddb98a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  option: 2

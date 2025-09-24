@@ -61,12 +61,13 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.1.11f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Utils\ProgressBar.cs" />
+    <Compile Include="Assets\Scripts\Counter\TrashCounter.cs" />
     <Compile Include="Assets\Scripts\KitchenItem.cs" />
-    <Compile Include="Assets\Scripts\Counter\ProgressBar.cs" />
     <Compile Include="Assets\Input\InputActions.cs" />
-    <Compile Include="Assets\Scripts\Timer.cs" />
     <Compile Include="Assets\Scripts\Counter\BaseCounter.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerVisuals.cs" />
+    <Compile Include="Assets\Scripts\Utils\StopWatch.cs" />
     <Compile Include="Assets\Scripts\KitchenItemBuilder.cs" />
     <Compile Include="Assets\Scripts\IngredientDefinition.cs" />
     <Compile Include="Assets\Scripts\State Mashine\StateMashine.cs" />
@@ -76,6 +77,8 @@
     <Compile Include="Assets\Scripts\Counter\ClearCounter.cs" />
     <Compile Include="Assets\Scripts\CuttingRecipe.cs" />
     <Compile Include="Assets\Scripts\Counter\Counter.cs" />
+    <Compile Include="Assets\Scripts\Utils\Timer.cs" />
+    <Compile Include="Assets\Scripts\Utils\LookAtCamera.cs" />
     <Compile Include="Assets\Scripts\State Mashine\Transition.cs" />
     <Compile Include="Assets\Scripts\Player\Player.cs" />
     <Compile Include="Assets\Scripts\Ingredient.cs" />

@@ -11,13 +11,12 @@ public class Player : MonoBehaviour {
     private NavMeshAgent agent;
     
     private InputActions.PlayerActions playerActions;
-    private bool isWalking = false;
 
     public event Action<Vector3> OnDestinationSet;
-    public event Action OnArriveAtDestination;
+    public event Action OnArriveAtDestination, OnLongIdleWait;
 
-    private Vector3 lookAtWhenArrive = Vector3.zero;
     [SerializeField] private float rotationSpeed = 200f;
+    [SerializeField] private float timeToLongIdle = 8f;
 
     private Counter currentCounter;
 
@@ -27,17 +26,74 @@ public class Player : MonoBehaviour {
 
     public bool CanCarry { get { return itemsInHand.Count < capacity; } }
 
+
+    private PlayerState playerState;
+    private StopWatch idleStopwatch;
+
     private void Awake() {
         InputActions inputActions = new InputActions();
         playerActions = inputActions.Player;
 
         agent = GetComponent<NavMeshAgent>();
         OnDestinationSet += SetNavAgent;
-
         itemsInHand = new List<KitchenItem>();
+
+        playerState = PlayerState.Idle;
+        idleStopwatch = new StopWatch();
     }
 
     private void Update() {
+        switch (playerState) {
+            case PlayerState.Idle:
+                if (idleStopwatch.IsRunning) {
+                    if (idleStopwatch.Elapsed >= timeToLongIdle) {
+                        idleStopwatch.Stop();
+                        playerState = PlayerState.IdleLongTurning;
+                        OnLongIdleWait?.Invoke();
+                    }
+                } else {
+                    idleStopwatch.Start();
+                }
+                break;
+                
+            case PlayerState.IdleLongTurning:
+                //Destination is counter, may need to turn
+                Quaternion idleTargetRotation = SetTargetRotation(Camera.main.transform.position);
+
+                if (Quaternion.Angle(transform.rotation, idleTargetRotation) > 0.2) {
+                    transform.rotation = Quaternion.RotateTowards(transform.rotation, idleTargetRotation, rotationSpeed * Time.deltaTime);
+                } else {
+                    playerState = PlayerState.IdleLong;
+                }
+                break;
+            case PlayerState.WalkingToDestination:
+                if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance) {
+                    OnArriveAtDestination?.Invoke();
+                    playerState = PlayerState.TurningToObjective;
+                }
+                break;
+
+            case PlayerState.TurningToObjective:
+                if (currentCounter != null) {
+                    //Destination is counter, may need to turn
+                    Quaternion walkTargetRotation = SetTargetRotation(currentCounter.LookAtWhenArrive);
+
+                    if (Quaternion.Angle(transform.rotation, walkTargetRotation) > 0.2) {
+                        transform.rotation = Quaternion.RotateTowards(transform.rotation, walkTargetRotation, rotationSpeed * Time.deltaTime);
+                    } else {
+                        playerState = PlayerState.InteractWithCounter;
+                    }
+                } else {
+                    playerState = PlayerState.Idle;
+                }
+                break;
+
+            case PlayerState.InteractWithCounter:
+                currentCounter?.Interact(this);
+                playerState = PlayerState.WaitingForCounterAction;
+                break;
+        }
+        /*
         if (isWalking && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance) {
             isWalking = false;
             OnArriveAtDestination?.Invoke();
@@ -56,6 +112,14 @@ public class Player : MonoBehaviour {
             currentCounter.Interact(this);
             currentCounter = null;
         }
+        */
+    }
+
+    private Quaternion SetTargetRotation(Vector3 target) {
+        float angle =
+            Mathf.Atan2(target.x - transform.position.x, target.z - transform.position.z) * Mathf.Rad2Deg;
+        Quaternion targetRotation = Quaternion.AngleAxis(angle, Vector3.up);
+        return targetRotation;
     }
 
     private void SetDestination(InputAction.CallbackContext obj) {
@@ -69,13 +133,11 @@ public class Player : MonoBehaviour {
         foreach (RaycastHit hit in Physics.RaycastAll(ray, 100, floorLayer)) {
             if (hit.transform.TryGetComponent<Counter>(out Counter counter)) {
                 walkDestination = counter.WalkDestination;
-                lookAtWhenArrive = counter.LookAtWhenArrive;
                 currentCounter = counter;
                 break;
             } else {
                 if (hit.point != transform.position) {
                     walkDestination = hit.point;
-                    lookAtWhenArrive = Vector3.zero;
                     currentCounter = null;
                 }
             }
@@ -150,7 +212,8 @@ public class Player : MonoBehaviour {
     }
 
     private void WalkTo(Vector3 destination) {
-        isWalking = true;
+        //isWalking = true;
+        playerState = PlayerState.WalkingToDestination;
         OnDestinationSet?.Invoke(destination);
     }
 
@@ -162,5 +225,9 @@ public class Player : MonoBehaviour {
     private void OnDisable() {
         playerActions.Move.performed -= SetDestination;
         playerActions.Move.Disable();
+    }
+
+    private enum PlayerState {
+        Idle, IdleLong, IdleLongTurning, WalkingToDestination, TurningToObjective, InteractWithCounter, WaitingForCounterAction
     }
 }
